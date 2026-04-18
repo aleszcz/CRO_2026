@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Drug Testing Vendor Reference</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0e0f0d;
+      --surface: #161713;
+      --border: #2a2b27;
+      --accent: #c8f060;
+      --accent2: #60d4f0;
+      --accent3: #f0a060;
+      --text: #e8e9e2;
+      --muted: #6b6d62;
+      --tag-bg: #1e2019;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    header {
+      padding: 60px 48px 40px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(200,240,96,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .header-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-weight: 300;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.1;
+      color: var(--text);
+      max-width: 600px;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .header-meta {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+    }
+
+    /* Role grid */
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin: 0;
+    }
+
+    .role-cell {
+      background: var(--bg);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .role-cell .vendor-short {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .role-cell .role-desc {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* Vendor cards */
+    .vendors {
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .vendor-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 0.5s ease forwards;
+    }
+
+    .vendor-card:nth-child(1) { animation-delay: 0.05s; }
+    .vendor-card:nth-child(2) { animation-delay: 0.1s; }
+    .vendor-card:nth-child(3) { animation-delay: 0.15s; }
+    .vendor-card:nth-child(4) { animation-delay: 0.2s; }
+    .vendor-card:nth-child(5) { animation-delay: 0.25s; }
+    .vendor-card:nth-child(6) { animation-delay: 0.3s; }
+    .vendor-card:nth-child(7) { animation-delay: 0.35s; }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .vendor-card:hover {
+      border-color: #3a3b37;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 24px 28px 20px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .card-number {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      padding-top: 3px;
+      min-width: 22px;
+    }
+
+    .card-title-block {
+      flex: 1;
+    }
+
+    .vendor-name {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      font-size: 1.15rem;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .vendor-subtitle {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+      letter-spacing: 0.03em;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .tag {
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 2px;
+      font-weight: 500;
+    }
+
+    .tag-green  { background: rgba(200,240,96,0.1);  color: var(--accent);  border: 1px solid rgba(200,240,96,0.2); }
+    .tag-blue   { background: rgba(96,212,240,0.1);  color: var(--accent2); border: 1px solid rgba(96,212,240,0.2); }
+    .tag-orange { background: rgba(240,160,96,0.1);  color: var(--accent3); border: 1px solid rgba(240,160,96,0.2); }
+
+    .card-toggle {
+      font-size: 16px;
+      color: var(--muted);
+      transition: transform 0.2s;
+      margin-top: 2px;
+    }
+
+    .vendor-card.open .card-toggle {
+      transform: rotate(45deg);
+    }
+
+    .card-body {
+      display: none;
+      padding: 20px 28px 24px 70px;
+      border-top: 1px solid var(--border);
+    }
+
+    .vendor-card.open .card-body {
+      display: block;
+    }
+
+    .card-body p {
+      color: #b8b9b0;
+      font-size: 12px;
+      line-height: 1.8;
+      max-width: 680px;
+    }
+
+    .card-body .highlight {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: var(--tag-bg);
+      border-left: 2px solid var(--accent);
+      border-radius: 0 3px 3px 0;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .card-body .highlight strong {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    /* Table */
+    .table-section {
+      padding: 0 48px 64px;
+    }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    thead tr {
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #1e1f1b;
+      color: #b8b9b0;
+      vertical-align: top;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tr:hover td { background: rgba(255,255,255,0.015); }
+
+    .td-vendor {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    footer {
+      padding: 24px 48px;
+      border-top: 1px solid var(--border);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    @media (max-width: 640px) {
+      header, .vendors, .table-section, footer { padding-left: 20px; padding-right: 20px; }
+      .card-body { padding-left: 20px; }
+      .role-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-eyebrow">Vendor Reference · Drug Testing & Single Molecule</div>
+  <h1>CRO &amp; CDMO<br><em>Partner Overview</em></h1>
+  <p class="header-meta">7 vendors · preclinical · small molecule · in vivo · manufacturing</p>
+</header>
+
+<!-- Role grid -->
+<div class="role-grid">
+  <div class="role-cell">
+    <span class="vendor-short">Innostar</span>
+    <span class="role-desc">Preclinical safety &amp; DMPK (FDA-accepted)</span>
+  </div>
+  <div class="role-cell">
+    <span class="vendor-short">WuXi AppTec</span>
+    <span class="role-desc">Broad integrated testing platform</span>
+  </div>
+  <div class="role-cell">
+    <span class="vendor-short">Bora</span>
+    <span class="role-desc">Drug product CDMO — mfg &amp; fill/finish</span>
+  </div>
+  <div class="role-cell">
+    <span class="vendor-short">GemPharmatech</span>
+    <span class="role-desc">In vivo mouse models &amp; efficacy</span>
+  </div>
+  <div class="role-cell">
+    <span class="vendor-short">Kyinno</span>
+    <span class="role-desc">CRISPR cell lines, small mol screening</span>
+  </div>
+  <div class="role-cell">
+    <span class="vendor-short">Porton</span>
+    <span class="role-desc">Small molecule API chemistry &amp; CMC</span>
+  </div>
+  <div class="role-cell">
+    <span class="vendor-short">BioLegacy</span>
+    <span class="role-desc">Local San Diego CRO — discovery to IND</span>
+  </div>
+</div>
+
+<!-- Vendor cards -->
+<div class="vendors">
+
+  <div class="vendor-card" onclick="toggle(this)">
+    <div class="card-header">
+      <span class="card-number">01</span>
+      <div class="card-title-block">
+        <div class="vendor-name">Innostar Bio</div>
+        <div class="vendor-subtitle">Shanghai, China · Preclinical CRO</div>
+        <div class="tag-row">
+          <span class="tag tag-green">Small Molecules</span>
+          <span class="tag tag-green">DMPK</span>
+          <span class="tag tag-green">Tox</span>
+          <span class="tag tag-blue">FDA-GLP</span>
+        </div>
+      </div>
+      <span class="card-toggle">+</span>
+    </div>
+    <div class="card-body">
+      <p>A premier preclinical and clinical-stage CRO offering end-to-end drug development services from discovery to regulatory submission. Founded in 2010, supports small molecules, biologics, and cell therapies. GLP-certified by US FDA, OECD (Netherlands), and China's NMPA.</p>
+      <p style="margin-top:10px">Has evaluated nearly 750 compounds including over 500 small molecules across 140+ global clients. Services include nonclinical toxicology, DMPK, bioanalysis, biomarker analysis, and IND submission support.</p>
+      <div class="highlight"><strong>Best for:</strong> Preclinical safety and PK studies with multi-regulatory acceptance (FDA, EMA, CFDA).</div>
+    </div>
+  </div>
+
+  <div class="vendor-card" onclick="toggle(this)">
+    <div class="card-header">
+      <span class="card-number">02</span>
+      <div class="card-title-block">
+        <div class="vendor-name">WuXi AppTec</div>
+        <div class="vendor-subtitle">Global · Integrated CRO / CRDMO</div>
+        <div class="tag-row">
+          <span class="tag tag-green">DMPK</span>
+          <span class="tag tag-green">Safety Assessment</span>
+          <span class="tag tag-blue">Bioanalytical</span>
+          <span class="tag tag-blue">Full Pipeline</span>
+        </div>
+      </div>
+      <span class="card-toggle">+</span>
+    </div>
+    <div class="card-body">
+      <p>Their Laboratory Testing Division is a comprehensive integrated testing platform supporting customers across the full spectrum of development — from early drug discovery through to market. Services span DMPK, safety assessment, and bioanalytical testing.</p>
+      <p style="margin-top:10px">One of the largest and most full-service CRO/CDMO platforms globally, with a drug discovery engine and manufacturing capabilities in addition to testing.</p>
+      <div class="highlight"><strong>Best for:</strong> When you need one partner to handle testing across multiple modalities and stages with strong global regulatory standing.</div>
+    </div>
+  </div>
+
+  <div class="vendor-card" onclick="toggle(this)">
+    <div class="card-header">
+      <span class="card-number">03</span>
+      <div class="card-title-block">
+        <div class="vendor-name">Bora Pharmaceuticals</div>
+        <div class="vendor-subtitle">US · Canada · Taiwan · Drug Product CDMO</div>
+        <div class="tag-row">
+          <span class="tag tag-orange">Drug Product</span>
+          <span class="tag tag-orange">Fill/Finish</span>
+          <span class="tag tag-orange">cGMP Mfg</span>
+          <span class="tag tag-blue">Sterile Injectable</span>
+        </div>
+      </div>
+      <span class="card-toggle">+</span>
+    </div>
+    <div class="card-body">
+      <p>A premier international CDMO specializing in formulation development, clinical and commercial manufacturing, and packaging of complex oral solid dose, liquid, semi-solid, biologics, and sterile injectable products. Delivers to more than 100 markets worldwide.</p>
+      <p style="margin-top:10px">Baltimore facility has extensive experience in tech transfer, scale-up, and commercial production of both small molecules and biological compounds. 9 cGMP facilities across North America and Taiwan, approved by FDA, EMA, Health Canada, and others.</p>
+      <div class="highlight"><strong>Best for:</strong> Drug product manufacturing — once your molecule is ready for formulation, clinical supply, or commercial scale.</div>
+    </div>
+  </div>
+
+  <div class="vendor-card" onclick="toggle(this)">
+    <div class="card-header">
+      <span class="card-number">04</span>
+      <div class="card-title-block">
+        <div class="vendor-name">GemPharmatech</div>
+        <div class="vendor-subtitle">Nanjing, China · San Diego, US · In Vivo CRO</div>
+        <div class="tag-row">
+          <span class="tag tag-green">Mouse Models</span>
+          <span class="tag tag-green">In Vivo Efficacy</span>
+          <span class="tag tag-blue">Humanized Mice</span>
+          <span class="tag tag-blue">Oncology</span>
+        </div>
+      </div>
+      <span class="card-toggle">+</span>
+    </div>
+    <div class="card-body">
+      <p>Leading provider of genetically engineered mouse models (GEMMs) and preclinical research services globally. Maintains a collection of 25,000+ mouse strains including KO/cKO, humanized, immunodeficient, and germ-free mice — one of the world's largest libraries.</p>
+      <p style="margin-top:10px">San Diego expansion (2025) provides local lab space, mouse breeding, and in vivo preclinical studies. Assay platforms include PK/PD, flow cytometry, histopathology, behavioral analysis, and in vivo imaging.</p>
+      <div class="highlight"><strong>Best for:</strong> In vivo mouse efficacy work — oncology/immunology, metabolic disease, autoimmune models. Local US access now available in San Diego.</div>
+    </div>
+  </div>
+
+  <div class="vendor-card" onclick="toggle(this)">
+    <div class="card-header">
+      <span class="card-number">05</span>
+      <div class="card-title-block">
+        <div class="vendor-name">Kyinno Biotechnology</div>
+        <div class="vendor-subtitle">Beijing · Boston (Waltham, MA) · Oncology CRO</div>
+        <div class="tag-row">
+          <span class="tag tag-green">CRISPR</span>
+          <span class="tag tag-green">Cell Lines</span>
+          <span class="tag tag-green">Small Molecules</span>
+          <span class="tag tag-blue">PROTACs</span>
+          <span class="tag tag-blue">In Vitro Screening</span>
+        </div>
+      </div>
+      <span class="card-toggle">+</span>
+    </div>
+    <div class="card-body">
+      <p>A preclinical CRO focused on oncology drug discovery with 8,000+ engineered cell lines and specialized CRISPR knock-in/knock-out capabilities. Provides in vitro and in vivo pharmacology, cell line engineering, therapeutic target identification, and antibody discovery.</p>
+      <p style="margin-top:10px">Services include CRISPR cell line construction, cell-based assay validation, drug screening for small molecules and PROTACs, FACS assays, ADCC/ADCP bioassays, and PK/PD efficacy studies in immunodeficient mouse models. Over 700 BaF3 kinase cell lines for kinase inhibitor screening.</p>
+      <div class="highlight"><strong>Best for:</strong> CRISPR-based testing, small molecule / PROTAC target engagement assays, and cell-based pharmacology screening.</div>
+    </div>
+  </div>
+
+  <div class="vendor-card" onclick="toggle(this)">
+    <div class="card-header">
+      <span class="card-number">06</span>
+      <div class="card-title-block">
+        <div class="vendor-name">Porton Pharma Solutions</div>
+        <div class="vendor-subtitle">China · US · EU · Small Molecule CDMO</div>
+        <div class="tag-row">
+          <span class="tag tag-orange">API Manufacturing</span>
+          <span class="tag tag-orange">CMC</span>
+          <span class="tag tag-orange">Process Dev</span>
+          <span class="tag tag-blue">PROTACs</span>
+        </div>
+      </div>
+      <span class="card-toggle">+</span>
+    </div>
+    <div class="card-body">
+      <p>A global small molecule CDMO with end-to-end API development and manufacturing from preclinical to commercial production. Services include process design, route scouting, GMP manufacturing, solid form selection (polymorphs, salts, cocrystals), and IND/NDA dossier support.</p>
+      <p style="margin-top:10px">Over 4,200 employees, 18 sites across US, EU, and China. Received the "Global Small Molecule API Award" at the 2025 Outsourced Pharma CDMO Leadership Awards. Strong capabilities in PROTACs, continuous chemistry, biocatalysis, and HPAPI.</p>
+      <div class="highlight"><strong>Best for:</strong> Small molecule API chemistry, CMC development, and process scale-up from pre-clinical through commercial manufacturing.</div>
+    </div>
+  </div>
+
+  <div class="vendor-card" onclick="toggle(this)">
+    <div class="card-header">
+      <span class="card-number">07</span>
+      <div class="card-title-block">
+        <div class="vendor-name">BioLegacy Research</div>
+        <div class="vendor-subtitle">San Diego, CA · Full-Service Preclinical CRO</div>
+        <div class="tag-row">
+          <span class="tag tag-green">GLP / Non-GLP</span>
+          <span class="tag tag-green">In Vivo / In Vitro</span>
+          <span class="tag tag-blue">IND-Enabling</span>
+          <span class="tag tag-blue">Local SD</span>
+        </div>
+      </div>
+      <span class="card-toggle">+</span>
+    </div>
+    <div class="card-body">
+      <p>San Diego-based CRO delivering GLP and non-GLP biological services since 2001 (originally Bio-Quant). Expertise in in vitro and in vivo research across inflammation/autoimmunity, oncology, and metabolic disorders, testing biologics, small molecules, natural products, and medical devices.</p>
+      <p style="margin-top:10px">Guides pipelines from early discovery to IND submission with on-site bioanalytical capabilities, multi-species models (mice through NHPs), GLP toxicology, and safety pharmacology. Agile and flexible with fast study startup.</p>
+      <div class="highlight"><strong>Best for:</strong> Local San Diego partner for early-stage discovery through IND-enabling studies. Strong for biotech startups needing flexibility and direct scientist access.</div>
+    </div>
+  </div>
+
+</div><!-- /vendors -->
+
+<!-- Summary table -->
+<div class="table-section">
+  <div class="section-label">Quick Reference Summary</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Vendor</th>
+        <th>Type</th>
+        <th>Primary Role</th>
+        <th>Location</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="td-vendor"><span class="dot"></span>Innostar Bio</td>
+        <td>CRO</td>
+        <td>Preclinical safety / DMPK — FDA &amp; OECD GLP</td>
+        <td>Shanghai, CN</td>
+      </tr>
+      <tr>
+        <td class="td-vendor"><span class="dot"></span>WuXi AppTec</td>
+        <td>CRO / CRDMO</td>
+        <td>Integrated testing — DMPK, safety, bioanalytical</td>
+        <td>Global</td>
+      </tr>
+      <tr>
+        <td class="td-vendor"><span class="dot"></span>Bora Pharmaceuticals</td>
+        <td>CDMO</td>
+        <td>Drug product mfg — oral, sterile injectable, biologics</td>
+        <td>US · Canada · Taiwan</td>
+      </tr>
+      <tr>
+        <td class="td-vendor"><span class="dot"></span>GemPharmatech</td>
+        <td>CRO</td>
+        <td>In vivo mouse models &amp; preclinical efficacy</td>
+        <td>Nanjing · San Diego</td>
+      </tr>
+      <tr>
+        <td class="td-vendor"><span class="dot"></span>Kyinno Biotechnology</td>
+        <td>CRO</td>
+        <td>CRISPR cell lines, small mol / PROTAC screening</td>
+        <td>Beijing · Boston</td>
+      </tr>
+      <tr>
+        <td class="td-vendor"><span class="dot"></span>Porton Pharma</td>
+        <td>CDMO</td>
+        <td>Small molecule API development &amp; CMC manufacturing</td>
+        <td>CN · US · EU</td>
+      </tr>
+      <tr>
+        <td class="td-vendor"><span class="dot"></span>BioLegacy Research</td>
+        <td>CRO</td>
+        <td>Discovery through IND — in vitro, in vivo, GLP tox</td>
+        <td>San Diego, CA</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  Drug Testing &amp; Single Molecule Vendor Reference · Updated April 2026
+</footer>
+
+<script>
+  function toggle(card) {
+    card.classList.toggle('open');
+  }
+</script>
+
+</body>
+</html>
